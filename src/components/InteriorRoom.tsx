@@ -1,70 +1,29 @@
-
-import { useRef } from 'react';
-import { Canvas, useFrame } from '@react-three/fiber';
+import React, { useRef } from 'react';
+import { Canvas } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
-import * as THREE from 'three';
+import { MeshStandardMaterial } from 'three';
+import { Plane, Box } from '@react-three/drei';
 
-type RoomProps = {
-  position?: [number, number, number];
-  rotation?: [number, number, number];
-};
-
-const Room = ({ position = [0, 0, 0], rotation = [0, 0, 0] }: RoomProps) => {
-  const ref = useRef<THREE.Mesh>(null!);
-
-  useFrame(() => {
-    ref.current.rotation.y += 0.01;
-  });
+const InteriorRoom: React.FC = () => {
+  const wallMaterial = new MeshStandardMaterial({ color: 'white' });
+  const floorMaterial = new MeshStandardMaterial({ color: 'white' });
 
   return (
-    <mesh ref={ref} position={position} rotation={rotation}>
-      <boxGeometry args={[10, 10, 10]} />
-      <meshStandardMaterial color="white" />
-    </mesh>
-  );
-};
-
-type FloorProps = {
-  position?: [number, number, number];
-  rotation?: [number, number, number];
-};
-
-const Floor = ({ position = [0, 0, 0], rotation = [0, 0, 0] }: FloorProps) => {
-  return (
-    <mesh position={position} rotation={rotation}>
-      <planeGeometry args={[100, 100]} />
-      <meshStandardMaterial color="gray" />
-    </mesh>
-  );
-};
-
-type WallProps = {
-  position: [number, number, number];
-  rotation: [number, number, number];
-};
-
-const Wall = ({ position, rotation }: WallProps) => {
-  return (
-    <mesh position={position} rotation={rotation}>
-      <planeGeometry args={[10, 100]} />
-      <meshStandardMaterial color="white" />
-    </mesh>
-  );
-};
-
-const InteriorRoom = () => {
-  return (
-    <Canvas>
+    <Canvas 
+      style={{ width: '100vw', height: '100vh' }}>
+      <ambientLight intensity={0.9} />
       <OrbitControls />
-      <ambientLight intensity={0.5} />
-      <pointLight position={[10, 10, 10]} intensity={1} />
-      <Room />
-      <Floor />
-      <Wall position={[5, 0, 0]} rotation={[0, Math.PI / 2, 0]} />
-      <Wall position={[-5, 0, 0]} rotation={[0, -Math.PI / 2, 0]} />
-      <Wall position={[0, 0, 5]} rotation={[0, Math.PI, 0]} />
+
+      {/* Floor */}
+      <Plane args={[10, 10]} rotation={[-Math.PI / 2, 0, 0]} material={floorMaterial} />
+
+      {/* Walls */}
+      {/* <Box args={[10, 3, 0.1]} position={[0, 1.5, -5]} material={wallMaterial} /> Black Walls  */}
+      <Box args={[10, 3, 0.1]} position={[0, 1.5, 5]} material={wallMaterial} />  {/* Front Walls */}
+      {/* <Box args={[0.1, 3, 10]} position={[-5, 1.5, 0]} material={wallMaterial} /> Left Walls */}
+      <Box args={[0.1, 3, 10]} position={[5, 1.5, 0]} material={wallMaterial} />  {/* Right Walls */}
     </Canvas>
   );
-}
+};
 
 export default InteriorRoom;
